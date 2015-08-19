@@ -12,7 +12,7 @@ targeting = True	#are we calculating who is our target
 
 spread = True	#do we need to be exact with our aim
 spr = 20		#the allowed angle spread for shooting
-delay = 0.02	#the main loop delay
+delay = 0.03	#the main loop delay
 
 sprey = 1
 des_angle = 0	#the desired angle to aim
@@ -136,10 +136,12 @@ while 1==1:
 			k = x.move("RIGHT")
 			print "RIGHT"
 			x.send_command(k)
+			time.sleep(delay)
 		if bot_vel.dx>0:
 			k = x.move("LEFT")
 			print "LEFT"
 			x.send_command(k)
+			time.sleep(delay)
 		#else:
 			#print "NONE"
 		
@@ -147,10 +149,12 @@ while 1==1:
 			k = x.move("DOWN")
 			print "DOWN"
 			x.send_command(k)
+			time.sleep(delay)
 		if bot_vel.dy>0:
 			k = x.move("UP")
 			print "UP"
 			x.send_command(k)
+			time.sleep(delay)
 		#else:
 			#print "NONE"
 	
@@ -173,11 +177,11 @@ while 1==1:
 		if des_angle>bot.angle:
 			print "ROT-LEFT"
 			x.send_command(x.rot("LEFT"))
-			
+			time.sleep(delay)
 		if des_angle<bot.angle:
 			print "ROT-RIGHT"
 			x.send_command(x.rot("RIGHT"))
-			
+			time.sleep(delay)
 		else:
 			shoot = True
 	
@@ -193,23 +197,28 @@ while 1==1:
 			k = x.move("DOWN")
 			#print "DOWN"
 			x.send_command(k)
+			time.sleep(delay)
 		if r==-1:
 			k =  x.move("UP")
 			#print "UP"
 			x.send_command(k)
+			time.sleep(delay)
 	
 		r = Decide(DX, DV.dx, agression)
 		if r==1:
 			k = x.move("RIGHT")
 			#print "RIGHT"
 			x.send_command(k)
+			time.sleep(delay)
 		if r==-1:
 			k = x.move("LEFT")
 			#print "LEFT"
 			x.send_command(k)
+			time.sleep(delay)
 	
 	if shoot:
 		x.send_command(x.shoot())
+		time.sleep(delay)
 		#for i in range(sprey):
 		#	x.send_command(x.shoot())
 		#	x.send_command(x.rot("RIGHT"))
