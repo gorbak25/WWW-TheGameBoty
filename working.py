@@ -5,7 +5,7 @@ import math
 
 tracing = True 		#are we tracing our target
 aim = True			#are we aiming for our target
-shoot = False		#are we shooting
+shoot = True		#are we shooting
 follow = False		#are we following our target
 stand = True		#are we trying to stand still
 targeting = True	#are we calculating who is our target
@@ -100,11 +100,10 @@ for i in range(numOfPlayers):
 while 1==1:
 	players = None
 	
-	while players==None or ComparePlayers(players, prev_players, numOfPlayers):
+	commands = []
+	
+	while players==None:
 		players = x.get_players()
-		if shoot:
-			k = x.shoot()
-			x.send_command(k)
 	
 	for i in range(numOfPlayers):
 		velocity[i].dx = (players[i].x - prev_players[i].x)#*s.FPS
@@ -133,24 +132,20 @@ while 1==1:
 	
 	if stand:
 		if bot_vel.dx>0:
-			k = x.move("RIGHT")
+			commands.append(x.move("RIGHT"))
 			#print "RIGHT"
-			x.send_command(k)
 		if bot_vel.dx<0:
-			k = x.move("LEFT")
+			commands.append(x.move("LEFT"))
 			#print "LEFT"
-			x.send_command(k)
 		#else:
 			#print "NONE"
 		
 		if bot_vel.dy>0:
-			k = x.move("DOWN")
+			commands.append(x.move("DOWN"))
 			#print "DOWN"
-			x.send_command(k)
 		if bot_vel.dy<0:
-			k = x.move("UP")
+			commands.append(x.move("UP"))
 			#print "UP"
-			x.send_command(k)
 		#else:
 			#print "NONE"
 	
@@ -167,14 +162,12 @@ while 1==1:
 			shoot = True
 			
 		if des_angle>bot.angle:
-			k = x.rot("LEFT")
+			commands.append(x.rot("LEFT"))
 			#print "ROT-LEFT"
-			x.send_command(k)
 			
 		if des_angle<bot.angle:
-			k = x.rot("RIGHT")
+			commands.append(x.rot("RIGHT"))
 			#print "ROT-RIGHT"
-			x.send_command(k)
 			
 		else:
 			shoot = True
@@ -188,29 +181,31 @@ while 1==1:
 	
 		r = Decide(DY, DV.dy, agression)
 		if r==1:
-			k = x.move("DOWN")
+			commands.append(x.move("DOWN"))
 			#print "DOWN"
-			x.send_command(k)
 		if r==-1:
-			k = x.move("UP")
+			commands.append(x.move("UP"))
 			#print "UP"
-			x.send_command(k)
 	
 		r = Decide(DX, DV.dx, agression)
 		if r==1:
-			k = x.move("RIGHT")
+			commands.append(x.move("RIGHT"))
 			#print "RIGHT"
-			x.send_command(k)
 		if r==-1:
-			k = x.move("LEFT")
+			commands.append(x.move("LEFT"))
 			#print "LEFT"
-			x.send_command(k)
 	
 	#print "\n"
-	
+
+	if shoot:
+		commands.append(x.shoot())	
 	#if shoot:
 	#	k = x.shoot()
 	#	x.send_command(k)
+	
+	#print commands
+	
+	x.send_command(commands)
 	
 	prev_players = players
 	#time.sleep(delay)

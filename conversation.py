@@ -30,7 +30,7 @@ class Conversation(object):
         self.fps = settings.FPS
         self.sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
         self.sock.connect((settings.IP, settings.PORT))
-        self.sock.settimeout(1.0 / settings.FPS * 2)
+        self.sock.settimeout(1.0 / settings.FPS * 20)
         self.frames_missed_in_row = 0
 
     def get_flags(self, flag_name, byte):
