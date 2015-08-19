@@ -11,7 +11,7 @@ stand = True		#are we trying to stand still
 targeting = True	#are we calculating who is our target
 
 spread = True	#do we need to be exact with our aim
-spr = 10		#the allowed angle spread for shooting
+spr = 20		#the allowed angle spread for shooting
 delay = 0.01	#the main loop delay
 
 des_angle = 0	#the desired angle to aim
@@ -38,6 +38,18 @@ def PrintPlayer(p):
     print p.shot
     print p.full
     print p.player_nr
+    
+#def ComparePlayers(a, b, numOfPlayers):
+#	good = True
+#	for i in range(numOfPlayers):
+#		if not( b[i].y==a[i].x and b[i].angle==a[i].y and b[i].hp==a[i].hp and b[i].ammo==a[i].ammo and b[i].reloading==a[i].reloading and b[i].alive==a[i].alive and b[i].shot==a[i].shot and b[i].full==a[i].full and b[i].player_nr==a[i].player_nr):
+#			good = False
+#		PrintPlayer(a[i])
+#		print "---"
+#		PrintPlayer(b[i])
+#		print "\n"
+#	print good
+#	return good
 
 def Decide(X,V,D):
     if X>=0:
@@ -88,8 +100,11 @@ for i in range(numOfPlayers):
 while 1==1:
 	players = None
 	
-	while players==None:
+	while players==None or ComparePlayers(players, prev_players, numOfPlayers):
 		players = x.get_players()
+		if shoot:
+			k = x.shoot()
+			x.send_command(k)
 	
 	for i in range(numOfPlayers):
 		velocity[i].dx = (players[i].x - prev_players[i].x)#*s.FPS
@@ -105,59 +120,64 @@ while 1==1:
 			if i!=s.MY_NR:
 				pla = players[i]
 				cur_val = (pla.x-bot.x)*(pla.x-bot.x) + (pla.y-bot.y)*(pla.y-bot.y)
+				#print cur_val
 				if cur_val < best_val:
 					best_val = cur_val
 					best_id = i
 		focus = best_id
+		#print best_val
+		#print focus
 	
 	enemy = players[focus]
 	enemy_vel = velocity[focus]
 	
 	if stand:
 		if bot_vel.dx>0:
-			k = x.move("LEFT")
-			print "LEFT"
+			k = x.move("RIGHT")
+			#print "RIGHT"
 			x.send_command(k)
 		if bot_vel.dx<0:
-			k = x.move("RIGHT")
-			print "RIGHT"
+			k = x.move("LEFT")
+			#print "LEFT"
 			x.send_command(k)
-		else:
-			print "NONE"
+		#else:
+			#print "NONE"
 		
 		if bot_vel.dy>0:
-			k = x.move("UP")
-			print "UP"
+			k = x.move("DOWN")
+			#print "DOWN"
 			x.send_command(k)
 		if bot_vel.dy<0:
-			k = x.move("DOWN")
-			print "DOWN"
+			k = x.move("UP")
+			#print "UP"
 			x.send_command(k)
-		else:
-			print "NONE"
+		#else:
+			#print "NONE"
 	
 	if tracing:
-		#des_angle = math.atan2(enemy.y-bot.y, enemy.x-bot.x)
-		
-		des_angle = 2*math.atan2(-math.sqrt(enemy.x*enemy.x*s.BULLET_SPEED*s.BULLET_SPEED-enemy.x*enemy.x*enemy_vel.dy*enemy_vel.dy+2*enemy.x*enemy_vel.dx*enemy.y*enemy_vel.dy-enemy_vel.dx*enemy_vel.dx*enemy.y*enemy.y+s.BULLET_SPEED*s.BULLET_SPEED*enemy.y*enemy.y)-enemy.x*s.BULLET_SPEED,-enemy.x*enemy_vel.dy+enemy_vel.dx*enemy.y+s.BULLET_SPEED*D)
-		
+		#des_angle = 0
+		#des_angle = math.atan2(enemy.y-bot.y, enemy.x-bot.x)/(2*math.pi)*360
+		try:
+			des_angle = 2*math.atan2(-math.sqrt(enemy.x*enemy.x*s.BULLET_SPEED*s.BULLET_SPEED-enemy.x*enemy.x*enemy_vel.dy*enemy_vel.dy+2*enemy.x*enemy_vel.dx*enemy.y*enemy_vel.dy-enemy_vel.dx*enemy_vel.dx*enemy.y*enemy.y+s.BULLET_SPEED*s.BULLET_SPEED*enemy.y*enemy.y)-enemy.x*s.BULLET_SPEED,-enemy.x*enemy_vel.dy+enemy_vel.dx*enemy.y+s.BULLET_SPEED*enemy.y)/(2*math.pi)*360
+		except ValueError:
+			print "WTF"
 	if aim:
-		shoot = false
-		if math.abs(des_angle-bot.angle)<=spr:
-			shoot = true
+		shoot = True
+		if abs(des_angle-bot.angle)<=spr:
+			shoot = True
 			
 		if des_angle>bot.angle:
 			k = x.rot("LEFT")
-			print "ROT-LEFT"
+			#print "ROT-LEFT"
 			x.send_command(k)
 			
 		if des_angle<bot.angle:
 			k = x.rot("RIGHT")
-			print "ROT-RIGHT"
+			#print "ROT-RIGHT"
 			x.send_command(k)
 			
 		else:
-			shoot = true
+			shoot = True
 	
 	if follow:
 		DX = enemy.x - bot.x
@@ -169,30 +189,30 @@ while 1==1:
 		r = Decide(DY, DV.dy, agression)
 		if r==1:
 			k = x.move("DOWN")
-			print "DOWN"
+			#print "DOWN"
 			x.send_command(k)
 		if r==-1:
 			k = x.move("UP")
-			print "UP"
+			#print "UP"
 			x.send_command(k)
 	
 		r = Decide(DX, DV.dx, agression)
 		if r==1:
 			k = x.move("RIGHT")
-			print "RIGHT"
+			#print "RIGHT"
 			x.send_command(k)
 		if r==-1:
 			k = x.move("LEFT")
-			print "LEFT"
+			#print "LEFT"
 			x.send_command(k)
 	
-	print "\n"
+	#print "\n"
 	
-	if shoot:
-		k = x.shoot()
-		x.send_command(k)
+	#if shoot:
+	#	k = x.shoot()
+	#	x.send_command(k)
 	
 	prev_players = players
-	time.sleep(delay)
+	#time.sleep(delay)
 	
 
