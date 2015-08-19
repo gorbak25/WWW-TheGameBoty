@@ -12,8 +12,9 @@ targeting = True	#are we calculating who is our target
 
 spread = True	#do we need to be exact with our aim
 spr = 20		#the allowed angle spread for shooting
-delay = 0.01	#the main loop delay
+delay = 0.02	#the main loop delay
 
+sprey = 1
 des_angle = 0	#the desired angle to aim
 agression = 10	#the aggresion of chasing our oponent
 focus = 0		#what we are focusing
@@ -131,43 +132,51 @@ while 1==1:
 	enemy_vel = velocity[focus]
 	
 	if stand:
-		if bot_vel.dx>0:
-			commands.append(x.move("RIGHT"))
-			#print "RIGHT"
 		if bot_vel.dx<0:
-			commands.append(x.move("LEFT"))
-			#print "LEFT"
+			k = x.move("RIGHT")
+			print "RIGHT"
+			x.send_command(k)
+		if bot_vel.dx>0:
+			k = x.move("LEFT")
+			print "LEFT"
+			x.send_command(k)
 		#else:
 			#print "NONE"
 		
-		if bot_vel.dy>0:
-			commands.append(x.move("DOWN"))
-			#print "DOWN"
 		if bot_vel.dy<0:
-			commands.append(x.move("UP"))
-			#print "UP"
+			k = x.move("DOWN")
+			print "DOWN"
+			x.send_command(k)
+		if bot_vel.dy>0:
+			k = x.move("UP")
+			print "UP"
+			x.send_command(k)
 		#else:
 			#print "NONE"
 	
 	if tracing:
-		#des_angle = 0
-		#des_angle = math.atan2(enemy.y-bot.y, enemy.x-bot.x)/(2*math.pi)*360
+		#des_angle = 2*math.pi-math.atan2(enemy.y-bot.y, enemy.x-bot.x)
 		try:
-			des_angle = 2*math.atan2(-math.sqrt(enemy.x*enemy.x*s.BULLET_SPEED*s.BULLET_SPEED-enemy.x*enemy.x*enemy_vel.dy*enemy_vel.dy+2*enemy.x*enemy_vel.dx*enemy.y*enemy_vel.dy-enemy_vel.dx*enemy_vel.dx*enemy.y*enemy.y+s.BULLET_SPEED*s.BULLET_SPEED*enemy.y*enemy.y)-enemy.x*s.BULLET_SPEED,-enemy.x*enemy_vel.dy+enemy_vel.dx*enemy.y+s.BULLET_SPEED*enemy.y)/(2*math.pi)*360
+			des_angle = 2*math.pi+(2*math.atan2(-math.sqrt(enemy.x*enemy.x*s.BULLET_SPEED*s.BULLET_SPEED-enemy.x*enemy.x*enemy_vel.dy*enemy_vel.dy+2*enemy.x*enemy_vel.dx*enemy.y*enemy_vel.dy-enemy_vel.dx*enemy_vel.dx*enemy.y*enemy.y+s.BULLET_SPEED*s.BULLET_SPEED*enemy.y*enemy.y)-enemy.x*s.BULLET_SPEED,-enemy.x*enemy_vel.dy+enemy_vel.dx*enemy.y+s.BULLET_SPEED*enemy.y))
 		except ValueError:
 			print "WTF"
 	if aim:
 		shoot = True
+		
+		print "----------"
+		print des_angle
+		print bot.angle
+		print "----------"
 		if abs(des_angle-bot.angle)<=spr:
 			shoot = True
 			
 		if des_angle>bot.angle:
-			commands.append(x.rot("LEFT"))
-			#print "ROT-LEFT"
+			print "ROT-LEFT"
+			x.send_command(x.rot("LEFT"))
 			
 		if des_angle<bot.angle:
-			commands.append(x.rot("RIGHT"))
-			#print "ROT-RIGHT"
+			print "ROT-RIGHT"
+			x.send_command(x.rot("RIGHT"))
 			
 		else:
 			shoot = True
@@ -181,33 +190,43 @@ while 1==1:
 	
 		r = Decide(DY, DV.dy, agression)
 		if r==1:
-			commands.append(x.move("DOWN"))
+			k = x.move("DOWN")
 			#print "DOWN"
+			x.send_command(k)
 		if r==-1:
-			commands.append(x.move("UP"))
+			k =  x.move("UP")
 			#print "UP"
+			x.send_command(k)
 	
 		r = Decide(DX, DV.dx, agression)
 		if r==1:
-			commands.append(x.move("RIGHT"))
+			k = x.move("RIGHT")
 			#print "RIGHT"
+			x.send_command(k)
 		if r==-1:
-			commands.append(x.move("LEFT"))
+			k = x.move("LEFT")
 			#print "LEFT"
+			x.send_command(k)
 	
-	#print "\n"
-
 	if shoot:
-		commands.append(x.shoot())	
-	#if shoot:
-	#	k = x.shoot()
-	#	x.send_command(k)
+		x.send_command(x.shoot())
+		#for i in range(sprey):
+		#	x.send_command(x.shoot())
+		#	x.send_command(x.rot("RIGHT"))
+		#for i in range(sprey):
+		#	x.send_command(x.rot("LEFT"))
+		#for i in range(sprey):
+		#	x.send_command(x.shoot())
+		#	x.send_command(x.rot("LEFT"))
+		#for i in range(sprey):
+		#	x.send_command(x.rot("RIGHT"))
 	
+	print "\n"
 	#print commands
 	
-	x.send_command(commands)
+	#x.send_command(commands)
 	
 	prev_players = players
-	#time.sleep(delay)
+	time.sleep(delay)
 	
 
