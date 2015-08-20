@@ -10,9 +10,9 @@ follow = False		#are we following our target
 stand = True		#are we trying to stand still
 targeting = True	#are we calculating who is our target
 
-spread = True	#do we need to be exact with our aim
-spr = 20		#the allowed angle spread for shooting
-delay = 0.03	#the main loop delay
+spread = True			#do we need to be exact with our aim
+spr = 10000/180*math.pi	#the allowed angle spread for shooting
+delay = 0.02			#the main loop delay
 
 sprey = 1
 des_angle = 0	#the desired angle to aim
@@ -101,7 +101,7 @@ for i in range(numOfPlayers):
 while 1==1:
 	players = None
 	
-	commands = []
+	commands = 0
 	
 	while players==None:
 		players = x.get_players()
@@ -133,39 +133,58 @@ while 1==1:
 	
 	if stand:
 		if bot_vel.dx<0:
-			k = x.move("RIGHT")
+			commands |= x.move("RIGHT")
 			print "RIGHT"
-			x.send_command(k)
-			time.sleep(delay)
 		if bot_vel.dx>0:
-			k = x.move("LEFT")
-			print "LEFT"
-			x.send_command(k)
-			time.sleep(delay)
-		#else:
-			#print "NONE"
+			commands |= x.move("LEFT")
+			print "LEFT" 
 		
 		if bot_vel.dy<0:
-			k = x.move("DOWN")
+			commands |= x.move("DOWN")
 			print "DOWN"
-			x.send_command(k)
-			time.sleep(delay)
 		if bot_vel.dy>0:
-			k = x.move("UP")
+			commands |= x.move("UP")
 			print "UP"
-			x.send_command(k)
-			time.sleep(delay)
-		#else:
-			#print "NONE"
 	
 	if tracing:
-		#des_angle = 2*math.pi-math.atan2(enemy.y-bot.y, enemy.x-bot.x)
-		try:
-			des_angle = 2*math.pi+(2*math.atan2(-math.sqrt(enemy.x*enemy.x*s.BULLET_SPEED*s.BULLET_SPEED-enemy.x*enemy.x*enemy_vel.dy*enemy_vel.dy+2*enemy.x*enemy_vel.dx*enemy.y*enemy_vel.dy-enemy_vel.dx*enemy_vel.dx*enemy.y*enemy.y+s.BULLET_SPEED*s.BULLET_SPEED*enemy.y*enemy.y)-enemy.x*s.BULLET_SPEED,-enemy.x*enemy_vel.dy+enemy_vel.dx*enemy.y+s.BULLET_SPEED*enemy.y))
-		except ValueError:
-			print "WTF"
+		#enemy.x = 0
+		#enemy.y = 0
+		dx = enemy.x - bot.x 
+		dy = bot.y - enemy.y 
+		
+		#des_angle1 = math.asin(dy/math.sqrt(dx*dx+dy*dy))
+		#des_angle2 = math.acos(dx/math.sqrt(dx*dx+dy*dy))
+		
+		#if des_angle1 < 0:
+		#	des_angle1 = 2*math.pi + des_angle1
+		
+		#if des_angle2 < 0:
+		#	des_angle2 = 2*math.pi + des_angle2
+		
+		des_angle = math.atan2(dy,dx)
+		if des_angle < 0:
+			des_angle = 2*math.pi + des_angle
+		
+		#if des_angle != des_angle1:
+		#	des_angle += math.pi
+		
+		#print des_angle1
+		#print des_angle2
+		
+		#enemy.x = 0
+		#enemy_vel.dx = 0
+		#enemy_vel.dy = 0
+		#enemy.y = 0
+		
+		#enemy.x -= bot.x
+		#enemy.y -= bot.y
+		
+#		try:
+#			des_angle = math.pi+(2*math.atan2(-math.sqrt(enemy.x*enemy.x*s.BULLET_SPEED*s.BULLET_SPEED-enemy.x*enemy.x*enemy_vel.dy*enemy_vel.dy+2*enemy.x*enemy_vel.dx*enemy.y*enemy_vel.dy-enemy_vel.dx*enemy_vel.dx*enemy.y*enemy.y+s.BULLET_SPEED*s.BULLET_SPEED*enemy.y*enemy.y)-enemy.x*s.BULLET_SPEED,-enemy.x*enemy_vel.dy+enemy_vel.dx*enemy.y+s.BULLET_SPEED*enemy.y))
+#		except ValueError:
+#			print "WTF"
 	if aim:
-		shoot = True
+		shoot = False
 		
 		print "----------"
 		print des_angle
@@ -176,12 +195,12 @@ while 1==1:
 			
 		if des_angle>bot.angle:
 			print "ROT-LEFT"
-			x.send_command(x.rot("LEFT"))
-			time.sleep(delay)
+			commands |= x.rot("LEFT")
+			
 		if des_angle<bot.angle:
 			print "ROT-RIGHT"
-			x.send_command(x.rot("RIGHT"))
-			time.sleep(delay)
+			commands |= x.rot("RIGHT")
+			
 		else:
 			shoot = True
 	
@@ -194,48 +213,28 @@ while 1==1:
 	
 		r = Decide(DY, DV.dy, agression)
 		if r==1:
-			k = x.move("DOWN")
+			commands |= x.move("DOWN")
 			#print "DOWN"
-			x.send_command(k)
-			time.sleep(delay)
 		if r==-1:
-			k =  x.move("UP")
+			commands |= x.move("UP")
 			#print "UP"
-			x.send_command(k)
-			time.sleep(delay)
 	
 		r = Decide(DX, DV.dx, agression)
 		if r==1:
-			k = x.move("RIGHT")
+			commands |= x.move("RIGHT")
 			#print "RIGHT"
-			x.send_command(k)
-			time.sleep(delay)
 		if r==-1:
-			k = x.move("LEFT")
+			commands |= x.move("LEFT")
 			#print "LEFT"
-			x.send_command(k)
-			time.sleep(delay)
 	
 	if shoot:
-		x.send_command(x.shoot())
-		time.sleep(delay)
-		#for i in range(sprey):
-		#	x.send_command(x.shoot())
-		#	x.send_command(x.rot("RIGHT"))
-		#for i in range(sprey):
-		#	x.send_command(x.rot("LEFT"))
-		#for i in range(sprey):
-		#	x.send_command(x.shoot())
-		#	x.send_command(x.rot("LEFT"))
-		#for i in range(sprey):
-		#	x.send_command(x.rot("RIGHT"))
+		commands |= x.shoot()
 	
 	print "\n"
 	#print commands
 	
-	#x.send_command(commands)
+	x.send_command(commands)
 	
 	prev_players = players
 	time.sleep(delay)
 	
-
