@@ -238,3 +238,34 @@ while 1==1:
 	prev_players = players
 	time.sleep(delay)
 	
+def PickTarget(Players, Velocity, ownPlayerNumber):
+    RelativeVelocity = Velocity
+    Distance = Velocity
+    PlayerToKill = []
+
+    DistanceWeight = -0.8
+    RelativeSpeedWeightX =  -0.5
+    RelativeSpeedWeightY =  -0.5
+
+    for i in range (len(Velocity)):
+        if i != ownPlayerNumber:
+            RelativeVelocity[i].dx -= Velocity[ownPlayerNumber].dx
+            RelativeVelocity[i].dy -= Velocity[ownPlayerNumber].dy
+
+    for i in range (len(Players)):
+        if i != ownPlayerNumber:
+            Distance[i] = math.sqrt(sqrtmath.pow(Players[i].x - Players[ownPlayerNumber].x, 2) + math.pow(Players[i].y - Players[ownPlayerNumber].y, 2))
+
+    for i in range(len(Players)):
+        if i != ownPlayerNumber:
+            PlayerToKill.append([i, Distance[i] * DistanceWeight + RelativeVelocity[i].dx * RelativeSpeedWeightX + RelativeVelocity[i].dy * RelativeSpeedWeightY])
+
+    MaxValue = -10000000.0;
+    ChosenPlayer = 0;
+
+    for i in range(len(PlayerToKill)):
+        if PlayerToKill[i][1] > MaxValue:
+            ChosenPlayer = i
+            MaxValue = PlayerToKill[i]
+
+    return ChosenPlayer
